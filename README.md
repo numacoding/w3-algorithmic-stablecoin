@@ -19,14 +19,14 @@ The purpose of this repository is to create an overcollateralized stablecoin wit
 
 ## Roadmap
 - [x] Code ERC20 contract ([`DecentralizedStableCoin.sol`](https://github.com/numacoding/w3-algorithmic-stablecoin/blob/main/src/DecentralizedStableCoin.sol))
-- [ ] Code Decentralized Stablecoin Engine ([`DSCEngine.sol`](https://github.com/numacoding/w3-algorithmic-stablecoin/blob/main/src/DSCEngine.sol)). 
+- [x] Code Decentralized Stablecoin Engine ([`DSCEngine.sol`](https://github.com/numacoding/w3-algorithmic-stablecoin/blob/main/src/DSCEngine.sol)). 
   - [x] deposit collateral function
   - [x] mint function
-  - [ ] deposit collateral & mint function
-  - [ ] redeem collateral function
-  - [ ] redeem collateral for DSC function
-  - [ ] burn DSC function
-  - [ ] liquidate function
+  - [x] deposit collateral & mint function
+  - [x] redeem collateral function
+  - [x] redeem collateral for DSC function
+  - [x] burn DSC function
+  - [x] liquidate function
 - [x] Deploy Script
 - [x] HelperConfig Script
 - [ ] Testing
