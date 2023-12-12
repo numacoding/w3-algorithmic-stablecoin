@@ -308,10 +308,19 @@ contract DSCEngine is ReentrancyGuard {
             uint256 collateralValueInUsd
         ) = _getAccountInformation(_user);
 
-        uint256 collateralAdjustedForThreshold = (collateralValueInUsd *
+        return _calculateHealthFactor(totalDscMinted, collateralValueInUsd);
+    }
+
+    function _calculateHealthFactor(
+        uint256 _totalDscMinted,
+        uint256 _collateralValueInUsd
+    ) internal pure returns (uint256) {
+        /// @notice we use this condition to avoid having an infinite health factor value (dividing by 0)
+        if (_totalDscMinted == 0) return type(uint256).max;
+        uint256 collateralAdjustedForThreshold = (_collateralValueInUsd *
             LIQUIDATION_THRESHOLD) / 100;
 
-        return (collateralAdjustedForThreshold * PRECISION) / totalDscMinted;
+        return (collateralAdjustedForThreshold * PRECISION) / _totalDscMinted;
     }
 
     // 1. check health factor
@@ -366,5 +375,15 @@ contract DSCEngine is ReentrancyGuard {
         return
             ((uint256(price) * ADDITIONAL_FEED_PRECISION) * _amount) /
             PRECISION;
+    }
+
+    function getAccountInformation(
+        address _user
+    )
+        external
+        view
+        returns (uint256 totalDscMinted, uint256 collateralValueInUsd)
+    {
+        return _getAccountInformation(_user);
     }
 }
