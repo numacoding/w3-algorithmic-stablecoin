@@ -5,6 +5,7 @@ import {DecentralizedStableCoin} from "./DecentralizedStableCoin.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import {OracleLib} from "./libraries/OracleLib.sol";
 
 /// @title DSCEngine
 /// @author Numa
@@ -32,6 +33,11 @@ contract DSCEngine is ReentrancyGuard {
     error DSCEngine__MintFailed();
     error DSCEngine__HealthFactorIsOk();
     error DSCEngine__HealthFactorNotImproved();
+
+    ////////////////////////////////
+    //      Type
+    ////////////////////////////////
+    using OracleLib for AggregatorV3Interface;
 
     ////////////////////////////////
     //         State Variables
@@ -335,6 +341,20 @@ contract DSCEngine is ReentrancyGuard {
     /////////////////////////////////
     //  Public & External View Functions
     /////////////////////////////////
+
+    function getCollateralTokenPriceFeed(
+        address _tokenAddress
+    ) external view returns (address) {
+        return s_priceFeeds[_tokenAddress];
+    }
+
+    function getUserCollateralBalance(
+        address _user,
+        address _token
+    ) external view returns (uint256) {
+        return s_collateralDeposited[_user][_token];
+    }
+
     function getCollateralTokens() external view returns (address[] memory) {
         return s_collateralTokens;
     }
@@ -346,7 +366,7 @@ contract DSCEngine is ReentrancyGuard {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(
             s_priceFeeds[_token]
         );
-        (, int256 price, , , ) = priceFeed.latestRoundData();
+        (, int256 price, , , ) = priceFeed.staleCheckLatestRoundData();
 
         return
             (_usdAmountInWei * PRECISION) /
@@ -373,7 +393,7 @@ contract DSCEngine is ReentrancyGuard {
         AggregatorV3Interface priceFeed = AggregatorV3Interface(
             s_priceFeeds[_token]
         );
-        (, int256 price, , , ) = priceFeed.latestRoundData();
+        (, int256 price, , , ) = priceFeed.staleCheckLatestRoundData();
         /// @notice if 1 ETH = 1000 USD, the returned value from CL will be 1000 * 1e8
         return
             ((uint256(price) * ADDITIONAL_FEED_PRECISION) * _amount) /
